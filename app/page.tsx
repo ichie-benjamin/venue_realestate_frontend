@@ -9,6 +9,7 @@ import RightSellingOption from "@/components/RightSellingOption";
 import { Button } from "@/components/ui/button";
 import UserReviews from "@/components/UserReviews";
 import WelcomeSection from "@/components/WelcomeSection";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
@@ -18,7 +19,9 @@ export default function Home() {
       <FeaturesSection />
       <AboutUs />
       <Explore />
-      <FeaturedPlaces />
+      <Suspense fallback={<div>Loading...</div>}>
+        <FeaturedPlaces />
+      </Suspense>
       <ExploreArea />
       <UserReviews />
       <RightSellingOption />

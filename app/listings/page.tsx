@@ -4,7 +4,7 @@ import Listings from "@/components/Listings/Listings";
 import SearchListings from "@/components/Listings/SearchListings";
 import Navbar from "@/components/Navbar";
 import { FilterContext } from "@/context";
-import React, { createContext, useState } from "react";
+import React, { Suspense, useState } from "react";
 
 const ListingsPage = () => {
   const [openFilter, setOpenFilter] = useState(false);
@@ -19,8 +19,12 @@ const ListingsPage = () => {
         value={{ openFilter, setOpenFilter, toggleFilter }}
       >
         <Navbar activeLink="listings" />
-        <SearchListings />
-        <Listings />
+        <Suspense fallback={<div>Loading...</div>}>
+          <SearchListings />
+        </Suspense>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Listings />
+        </Suspense>
       </FilterContext.Provider>
     </div>
   );

@@ -1,38 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { ChangeEvent, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { Slider } from "@/components/ui/slider";
 import { Input } from "./ui/input";
+import useSearchParamHandler from "@/hooks/useSearchParamsHandler";
+import { debounce } from "lodash";
 
-type SliderProps = React.ComponentProps<typeof Slider>;
+const RangeSlider = ({ className, ...props }: { className?: string }) => {
+  const { getParam, setParam } = useSearchParamHandler();
 
-interface RangeSliderProps {
-  min: number;
-  max: number;
-}
+  const minRange = Number(getParam("min_price") || 100000);
+  const maxRange = Number(getParam("max_price") || 5000000);
 
-const RangeSlider = ({ className, ...props }: SliderProps) => {
-  const [range, setRange] = useState<RangeSliderProps>({
-    min: 100000,
-    max: 5000000,
-  });
+  // Create a debounced version of setParam
+  const debouncedSetParam = useCallback(
+    debounce((key: string, value: string) => {
+      setParam(key, value);
+    }, 500), // 500ms delay
+    [setParam]
+  );
 
-  const setMin = (e: any) => {
-    if (range.max >= e.target.value) {
-      setRange({
-        ...range,
-        min: Number(e.target.value),
-      });
+  const setMin = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const value = Number(e.target.value);
+
+    if (value <= maxRange) {
+      debouncedSetParam("min_price", value.toString());
     }
   };
 
-  const setMax = (e: any) => {
-    if (range.min <= e.target.value) {
-      setRange({
-        ...range,
-        max: Number(e.target.value),
-      });
+  const setMax = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const value = Number(e.target.value);
+
+    if (value >= minRange) {
+      debouncedSetParam("max_price", value.toString());
     }
   };
 
@@ -47,7 +49,7 @@ const RangeSlider = ({ className, ...props }: SliderProps) => {
           min={10000}
           max={10000000}
           onChange={setMin}
-          value={range.min}
+          value={minRange}
         />
 
         <input
@@ -56,19 +58,20 @@ const RangeSlider = ({ className, ...props }: SliderProps) => {
           min={10000}
           max={10000000}
           onChange={setMax}
-          value={range.max}
+          value={maxRange}
         />
       </div>
+
       <div className="flex items-center gap-[10px] text-estate-grey-2 text-sm mt-[20px] px-2">
         <Input
-          value={range.min}
-          onChange={setMin}
+          value={minRange}
+          onChange={(e) => setMin(e)}
           className="w-full h-[50px] rounded-estate-border-radius border border-estate-grey-7"
         />
         <div className="bg-black w-[18px] h-[1px]"></div>
         <Input
-          onChange={setMax}
-          value={range.max}
+          value={maxRange}
+          onChange={(e) => setMax(e)}
           className="w-full h-[50px] rounded-estate-border-radius border border-estate-grey-7"
         />
       </div>
