@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-// import { Poppins } from "next/font/google";
 import "./globals.css";
 
-// const poppins = Poppins({
-//   subsets: ["latin"],
-//   weight: ["100", "400", "500", "700", "600"],
-// });
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ListingProvider } from "@/context/ListingContext";
+import QueryProvider from "@/context/QueryProvider";
+import { InterceptionContext } from "@/context/InterceptionContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,7 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <QueryProvider>
+          <ListingProvider>
+            <InterceptionContext>{children}</InterceptionContext>
+          </ListingProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryProvider>
+      </body>
     </html>
   );
 }
